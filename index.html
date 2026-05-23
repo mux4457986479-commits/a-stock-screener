@@ -68,6 +68,13 @@ body{background:#070b14;color:#dde5f5;font-family:-apple-system,BlinkMacSystemFo
 <script>
 var DATA=null;
 var activeBucket='10';
+var EM_ENDPOINTS=[
+  'https://92.push2.eastmoney.com/api/qt/clist/get',
+  'https://push2.eastmoney.com/api/qt/clist/get',
+  'https://7.push2.eastmoney.com/api/qt/clist/get',
+  'https://60.push2.eastmoney.com/api/qt/clist/get',
+  'https://72.push2.eastmoney.com/api/qt/clist/get'
+];
 
 function moneyYi(v){return v==null?'—':(v/100000000).toFixed(2)+'亿'}
 function moneyWan(v){return v==null?'—':(v/10000).toFixed(0)+'万'}
@@ -82,12 +89,113 @@ async function loadData(){
     var resp=await fetch('data.json?ts='+Date.now(),{cache:'no-store'});
     if(!resp.ok)throw new Error('data.json '+resp.status);
     DATA=await resp.json();
+    var empty=!DATA.ok&&(!DATA.total_count||DATA.total_count===0);
+    if(empty){
+      document.getElementById('notice').className='notice warn';
+      document.getElementById('notice').textContent='云端数据本次更新失败，正在尝试用当前浏览器直接读取东方财富...';
+      DATA=await fetchLiveData();
+    }
     render();
   }catch(e){
-    document.getElementById('notice').className='notice warn';
-    document.getElementById('notice').textContent='数据读取失败：'+e.message+'。请稍后刷新页面。';
+    try{
+      document.getElementById('notice').className='notice warn';
+      document.getElementById('notice').textContent='缓存数据读取失败，正在尝试浏览器实时读取东方财富...';
+      DATA=await fetchLiveData();
+      render();
+    }catch(err){
+      document.getElementById('notice').className='notice warn';
+      document.getElementById('notice').textContent='数据读取失败：'+err.message+'。请稍后刷新页面。';
+    }
   }
 }
+
+async function fetchLiveData(){
+  var stocks=await fetchEastmoneyBrowser();
+  var buckets={};
+  ['10','5','2'].forEach(function(k){
+    var th=Number(k);
+    buckets[k]=stocks.filter(function(s){return accepted(s,th)}).map(function(s){
+      var copy=Object.assign({},s);
+      copy.score=scoreStock(copy);
+      copy.concepts=[];
+      return copy;
+    }).sort(function(a,b){return b.score-a.score}).slice(0,120);
+  });
+  return {
+    ok:true,
+    updated_at:new Date().toISOString(),
+    generated_at:new Date().toISOString(),
+    source:'eastmoney-browser-fallback',
+    total_count:stocks.length,
+    message:'云端缓存不可用，当前为浏览器实时兜底数据。',
+    buckets:buckets
+  };
+}
+
+async function fetchEastmoneyBrowser(){
+  var lastErr=null;
+  for(var i=0;i<EM_ENDPOINTS.length;i++){
+    try{return await fetchByEndpoint(EM_ENDPOINTS[i])}catch(e){lastErr=e}
+  }
+  throw lastErr||new Error('东方财富接口不可用');
+}
+
+async function fetchByEndpoint(base){
+  var all=[];
+  var pageSize=300;
+  for(var page=1;page<=25;page++){
+    var payload=await jsonp(base,{
+      pn:page,pz:pageSize,po:1,np:1,fltt:2,invt:2,fid:'f3',
+      fs:'m:1+t:2,m:1+t:23,m:0+t:6,m:0+t:80',
+      fields:'f2,f3,f5,f6,f8,f9,f12,f14,f20,f21,f23,f62,f115',
+      _:Date.now()
+    });
+    var rows=payload&&payload.data&&payload.data.diff;
+    if(!rows||!rows.length)break;
+    all=all.concat(rows.map(parseLiveStock).filter(Boolean));
+    if(rows.length<pageSize)break;
+    await sleep(60);
+  }
+  if(!all.length)throw new Error('浏览器实时读取为空');
+  return all;
+}
+
+function jsonp(base,params){
+  return new Promise(function(resolve,reject){
+    var cb='em_cb_'+Date.now()+'_'+Math.random().toString(16).slice(2);
+    params.cb=cb;
+    var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k])}).join('&');
+    var script=document.createElement('script');
+    var timer=setTimeout(function(){cleanup();reject(new Error('东方财富接口超时'))},12000);
+    function cleanup(){clearTimeout(timer);try{delete window[cb]}catch(e){window[cb]=undefined}if(script.parentNode)script.parentNode.removeChild(script)}
+    window[cb]=function(data){cleanup();resolve(data)};
+    script.onerror=function(){cleanup();reject(new Error('东方财富接口加载失败'))};
+    script.src=base+'?'+qs;
+    document.body.appendChild(script);
+  });
+}
+
+function parseLiveStock(x){
+  var price=toNum(x.f2),pct=toNum(x.f3),code=String(x.f12||''),name=String(x.f14||'');
+  if(!code||!name||price==null||pct==null)return null;
+  return {code:code,name:name,price:price,pct:pct,amount:toNum(x.f6),turnover:toNum(x.f8),pe:toNum(x.f9),pe_ttm:toNum(x.f115),pb:toNum(x.f23),total_cap:toNum(x.f20),float_cap:toNum(x.f21),main_net:toNum(x.f62),concepts:[]};
+}
+
+function toNum(v){if(v==null||v===''||v==='-')return null;var n=Number(v);return isNaN(n)?null:n}
+function accepted(s,th){var up=(s.name||'').toUpperCase();return s.price>0&&s.price<th&&up.indexOf('ST')<0&&s.name.indexOf('退')<0&&s.pct>-9.5}
+function scoreStock(s){
+  var amountScore=Math.min((s.amount||0)/100000000,3)*16;
+  var turnoverScore=Math.min((s.turnover||0),8)*4;
+  var inflowScore=Math.max(Math.min((s.main_net||0)/10000000,8),-8)*2;
+  var pb=(s.pb&&s.pb>0)?s.pb:3;
+  var pe=(s.pe&&s.pe>0)?s.pe:s.pe_ttm;
+  pe=(pe&&pe>0)?pe:50;
+  var valuationScore=Math.max(0,30-pb*4-pe*.18);
+  var momentumScore=8-Math.abs(s.pct||0)*.7;
+  var capScore=Math.min((s.float_cap||0)/10000000000,2)*4;
+  return Math.round((amountScore+turnoverScore+inflowScore+valuationScore+momentumScore+capScore)*100)/100;
+}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
 
 function render(){
   var buckets=DATA.buckets||{};
