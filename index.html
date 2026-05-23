@@ -75,6 +75,8 @@ var EM_ENDPOINTS=[
   'https://60.push2.eastmoney.com/api/qt/clist/get',
   'https://72.push2.eastmoney.com/api/qt/clist/get'
 ];
+var EM_DATACENTER='https://datacenter-web.eastmoney.com/api/data/v1/get';
+var SINA_ENDPOINT='https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData';
 
 function moneyYi(v){return v==null?'—':(v/100000000).toFixed(2)+'亿'}
 function moneyWan(v){return v==null?'—':(v/10000).toFixed(0)+'万'}
@@ -137,7 +139,9 @@ async function fetchEastmoneyBrowser(){
   for(var i=0;i<EM_ENDPOINTS.length;i++){
     try{return await fetchByEndpoint(EM_ENDPOINTS[i])}catch(e){lastErr=e}
   }
-  throw lastErr||new Error('东方财富接口不可用');
+  try{return await fetchDatacenterBrowser()}catch(e){
+    try{return await fetchSinaBrowser()}catch(se){throw se||e||lastErr||new Error('行情接口不可用')}
+  }
 }
 
 async function fetchByEndpoint(base){
@@ -160,10 +164,10 @@ async function fetchByEndpoint(base){
   return all;
 }
 
-function jsonp(base,params){
+function jsonp(base,params,callbackParam){
   return new Promise(function(resolve,reject){
     var cb='em_cb_'+Date.now()+'_'+Math.random().toString(16).slice(2);
-    params.cb=cb;
+    params[callbackParam||'cb']=cb;
     var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k])}).join('&');
     var script=document.createElement('script');
     var timer=setTimeout(function(){cleanup();reject(new Error('东方财富接口超时'))},12000);
@@ -179,6 +183,72 @@ function parseLiveStock(x){
   var price=toNum(x.f2),pct=toNum(x.f3),code=String(x.f12||''),name=String(x.f14||'');
   if(!code||!name||price==null||pct==null)return null;
   return {code:code,name:name,price:price,pct:pct,amount:toNum(x.f6),turnover:toNum(x.f8),pe:toNum(x.f9),pe_ttm:toNum(x.f115),pb:toNum(x.f23),total_cap:toNum(x.f20),float_cap:toNum(x.f21),main_net:toNum(x.f62),concepts:[]};
+}
+
+async function fetchDatacenterBrowser(){
+  var all=[];
+  var pageSize=300;
+  for(var page=1;page<=25;page++){
+    var payload=await jsonp(EM_DATACENTER,{
+      sortColumns:'SECURITY_CODE',
+      sortTypes:'1',
+      pageSize:pageSize,
+      pageNumber:page,
+      reportName:'RPT_DMSK_TS_STOCKNEW',
+      quoteColumns:'f2~01~SECURITY_CODE~CLOSE_PRICE,f8~01~SECURITY_CODE~TURNOVERRATE,f3~01~SECURITY_CODE~CHANGE_RATE,f9~01~SECURITY_CODE~PE_DYNAMIC,f6~01~SECURITY_CODE~AMOUNT,f23~01~SECURITY_CODE~PB',
+      quoteType:'0',
+      columns:'ALL',
+      filter:'',
+      token:'894050c76af8597a853f5b408b759f5d',
+      _:Date.now()
+    },'callback');
+    var rows=payload&&payload.result&&payload.result.data;
+    if(!rows||!rows.length)break;
+    all=all.concat(rows.map(parseDatacenterStock).filter(Boolean));
+    if(rows.length<pageSize)break;
+    await sleep(60);
+  }
+  if(!all.length)throw new Error('备用数据中心接口读取为空');
+  return all;
+}
+
+function parseDatacenterStock(x){
+  var price=toNum(x.CLOSE_PRICE),pct=toNum(x.CHANGE_RATE),code=String(x.SECURITY_CODE||''),name=String(x.SECURITY_NAME_ABBR||'');
+  if(!code||!name||price==null||pct==null)return null;
+  return {code:code,name:name,price:price,pct:pct,amount:toNum(x.AMOUNT),turnover:toNum(x.TURNOVERRATE),pe:toNum(x.PE_DYNAMIC),pe_ttm:null,pb:toNum(x.PB),total_cap:null,float_cap:null,main_net:toNum(x.PRIME_INFLOW),concepts:[]};
+}
+
+async function fetchSinaBrowser(){
+  var all=[];
+  var pageSize=300;
+  for(var page=1;page<=25;page++){
+    var payload=await jsonp(SINA_ENDPOINT,{
+      page:page,
+      num:pageSize,
+      sort:'symbol',
+      asc:1,
+      node:'hs_a',
+      symbol:'',
+      _s_r_a:'page',
+      _:Date.now()
+    },'callback');
+    var rows=Array.isArray(payload)?payload:[];
+    if(!rows.length)break;
+    all=all.concat(rows.map(parseSinaStock).filter(Boolean));
+    if(rows.length<pageSize)break;
+    await sleep(60);
+  }
+  if(!all.length)throw new Error('新浪行情接口读取为空');
+  return all;
+}
+
+function parseSinaStock(x){
+  var symbol=String(x.symbol||'');
+  if(!(symbol.indexOf('sh')===0||symbol.indexOf('sz')===0))return null;
+  var price=toNum(x.trade),pct=toNum(x.changepercent),code=String(x.code||symbol.slice(2)),name=String(x.name||'');
+  if(!code||!name||price==null||pct==null)return null;
+  var total=toNum(x.mktcap),floatCap=toNum(x.nmc);
+  return {code:code,name:name,price:price,pct:pct,amount:toNum(x.amount),turnover:toNum(x.turnoverratio),pe:toNum(x.per),pe_ttm:null,pb:toNum(x.pb),total_cap:total==null?null:total*10000,float_cap:floatCap==null?null:floatCap*10000,main_net:null,concepts:[]};
 }
 
 function toNum(v){if(v==null||v===''||v==='-')return null;var n=Number(v);return isNaN(n)?null:n}
