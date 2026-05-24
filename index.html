@@ -136,12 +136,12 @@ async function fetchLiveData(){
 
 async function fetchEastmoneyBrowser(){
   var lastErr=null;
+  try{return await fetchDatacenterBrowser()}catch(e){lastErr=e}
+  try{return await fetchSinaBrowser()}catch(e){lastErr=e}
   for(var i=0;i<EM_ENDPOINTS.length;i++){
     try{return await fetchByEndpoint(EM_ENDPOINTS[i])}catch(e){lastErr=e}
   }
-  try{return await fetchDatacenterBrowser()}catch(e){
-    try{return await fetchSinaBrowser()}catch(se){throw se||e||lastErr||new Error('行情接口不可用')}
-  }
+  throw lastErr||new Error('行情接口不可用');
 }
 
 async function fetchByEndpoint(base){
