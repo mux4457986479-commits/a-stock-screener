@@ -35,7 +35,7 @@ body{background:#070b14;color:#dde5f5;font-family:-apple-system,BlinkMacSystemFo
 .concept-muted{color:#6b82a8;border-color:#1e3158;background:#111e35}.price-block{text-align:right;flex-shrink:0}.price{font-size:1.04rem;font-weight:700}.pct{font-size:.82rem;margin-top:3px}
 .up{color:#ff5c7d;font-weight:700}.down{color:#00e090;font-weight:700}.flat{color:#6b82a8;font-weight:700}
 .score-bar-wrap{margin:0 13px 9px;background:#111e35;border-radius:6px;height:5px;overflow:hidden}.score-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#f0a500,#ffd166)}
-.quick-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:0 13px 12px}.quick-grid div{background:#111e35;border-radius:8px;padding:7px 8px;min-width:0}
+.quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:0 13px 12px}.quick-grid div{background:#111e35;border-radius:8px;padding:7px 8px;min-width:0}
 .quick-grid span{display:block;color:#6b82a8;font-size:.58rem;margin-bottom:3px}.quick-grid strong{display:block;font-size:.74rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card-detail{display:none;padding:0 13px 13px;border-top:1px solid #1e3158}.card-detail.open{display:block}
 .total-row{display:flex;justify-content:space-between;align-items:center;background:rgba(240,165,0,.07);border:1px solid rgba(240,165,0,.2);border-radius:8px;padding:8px 12px;margin:10px 0}
@@ -46,6 +46,7 @@ body{background:#070b14;color:#dde5f5;font-family:-apple-system,BlinkMacSystemFo
 .link-btn{display:block;margin-top:10px;background:linear-gradient(135deg,#f0a500,#e09000);color:#000;text-align:center;text-decoration:none;border-radius:10px;padding:10px;font-size:.82rem;font-weight:700}
 .empty{text-align:center;color:#6b82a8;font-size:.82rem;padding:30px 0}footer{color:#6b82a8;font-size:.66rem;line-height:1.6;padding:12px 2px 0;text-align:center}
 @media(min-width:721px){.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{margin-bottom:0}}
+@media(max-width:430px){.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -81,6 +82,7 @@ var SINA_ENDPOINT='https://vip.stock.finance.sina.com.cn/quotes_service/api/json
 function moneyYi(v){return v==null?'—':(v/100000000).toFixed(2)+'亿'}
 function moneyWan(v){return v==null?'—':(v/10000).toFixed(0)+'万'}
 function num(v,d){return v==null||isNaN(v)?'—':Number(v).toFixed(d==null?2:d)}
+function chipText(v){return v==null||isNaN(v)?'暂无':Number(v).toFixed(2)+'%'}
 function cls(v){return (v||0)>0?'up':(v||0)<0?'down':'flat'}
 function esc(s){return String(s||'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
 function stockUrl(code){return 'https://quote.eastmoney.com/'+(String(code).startsWith('6')?'sh':'sz')+code+'.html'}
@@ -182,7 +184,7 @@ function jsonp(base,params,callbackParam){
 function parseLiveStock(x){
   var price=toNum(x.f2),pct=toNum(x.f3),code=String(x.f12||''),name=String(x.f14||'');
   if(!code||!name||price==null||pct==null)return null;
-  return {code:code,name:name,price:price,pct:pct,amount:toNum(x.f6),turnover:toNum(x.f8),pe:toNum(x.f9),pe_ttm:toNum(x.f115),pb:toNum(x.f23),total_cap:toNum(x.f20),float_cap:toNum(x.f21),main_net:toNum(x.f62),concepts:[]};
+  return {code:code,name:name,price:price,pct:pct,amount:toNum(x.f6),turnover:toNum(x.f8),pe:toNum(x.f9),pe_ttm:toNum(x.f115),pb:toNum(x.f23),total_cap:toNum(x.f20),float_cap:toNum(x.f21),main_net:toNum(x.f62),chip_concentration_90:null,concepts:[]};
 }
 
 async function fetchDatacenterBrowser(){
@@ -215,7 +217,7 @@ async function fetchDatacenterBrowser(){
 function parseDatacenterStock(x){
   var price=toNum(x.CLOSE_PRICE),pct=toNum(x.CHANGE_RATE),code=String(x.SECURITY_CODE||''),name=String(x.SECURITY_NAME_ABBR||'');
   if(!code||!name||price==null||pct==null)return null;
-  return {code:code,name:name,price:price,pct:pct,amount:toNum(x.AMOUNT),turnover:toNum(x.TURNOVERRATE),pe:toNum(x.PE_DYNAMIC),pe_ttm:null,pb:toNum(x.PB),total_cap:null,float_cap:null,main_net:toNum(x.PRIME_INFLOW),concepts:[]};
+  return {code:code,name:name,price:price,pct:pct,amount:toNum(x.AMOUNT),turnover:toNum(x.TURNOVERRATE),pe:toNum(x.PE_DYNAMIC),pe_ttm:null,pb:toNum(x.PB),total_cap:null,float_cap:null,main_net:toNum(x.PRIME_INFLOW),chip_concentration_90:null,concepts:[]};
 }
 
 async function fetchSinaBrowser(){
@@ -248,11 +250,17 @@ function parseSinaStock(x){
   var price=toNum(x.trade),pct=toNum(x.changepercent),code=String(x.code||symbol.slice(2)),name=String(x.name||'');
   if(!code||!name||price==null||pct==null)return null;
   var total=toNum(x.mktcap),floatCap=toNum(x.nmc);
-  return {code:code,name:name,price:price,pct:pct,amount:toNum(x.amount),turnover:toNum(x.turnoverratio),pe:toNum(x.per),pe_ttm:null,pb:toNum(x.pb),total_cap:total==null?null:total*10000,float_cap:floatCap==null?null:floatCap*10000,main_net:null,concepts:[]};
+  return {code:code,name:name,price:price,pct:pct,amount:toNum(x.amount),turnover:toNum(x.turnoverratio),pe:toNum(x.per),pe_ttm:null,pb:toNum(x.pb),total_cap:total==null?null:total*10000,float_cap:floatCap==null?null:floatCap*10000,main_net:null,chip_concentration_90:null,concepts:[]};
 }
 
 function toNum(v){if(v==null||v===''||v==='-')return null;var n=Number(v);return isNaN(n)?null:n}
-function accepted(s,th){var up=(s.name||'').toUpperCase();return s.price>0&&s.price<th&&up.indexOf('ST')<0&&s.name.indexOf('退')<0&&s.pct>-9.5}
+function accepted(s,th){
+  var up=(s.name||'').toUpperCase();
+  if(!(s.price>0&&s.price<th&&up.indexOf('ST')<0&&s.name.indexOf('退')<0&&s.pct>-9.5))return false;
+  if(DATA&&DATA.chip_threshold!=null&&DATA.require_chip&&s.chip_concentration_90==null)return false;
+  if(DATA&&DATA.chip_threshold!=null&&s.chip_concentration_90!=null&&s.chip_concentration_90>DATA.chip_threshold)return false;
+  return true;
+}
 function scoreStock(s){
   var amountScore=Math.min((s.amount||0)/100000000,3)*16;
   var turnoverScore=Math.min((s.turnover||0),8)*4;
@@ -275,7 +283,8 @@ function render(){
   document.getElementById('sTime').textContent=fmtTime(DATA.updated_at);
   var notice=document.getElementById('notice');
   notice.className=DATA.ok?'notice':'notice warn';
-  notice.textContent=(DATA.ok?'规则：':'提示：')+(DATA.message||'')+' 低门槛筛选：10元/5元/2元以下，剔除ST、退市和跌停附近个股；成交额、换手率、估值、主力净流入用于评分排序。';
+  var chipRule=DATA.chip_threshold!=null?'；新增条件：90%筹码集中度≤'+num(DATA.chip_threshold,2)+'%':'';
+  notice.textContent=(DATA.ok?'规则：':'提示：')+(DATA.message||'')+' 低门槛筛选：10元/5元/2元以下，剔除ST、退市和跌停附近个股'+chipRule+'；成交额、换手率、估值、主力净流入用于评分排序。';
 
   var keys=['10','5','2'];
   document.getElementById('tabs').innerHTML=keys.map(function(k){
@@ -293,6 +302,7 @@ function sortRow(){
     <button class="tag" onclick="sortCards(this,'pct')">涨幅优先</button>
     <button class="tag" onclick="sortCards(this,'amount')">成交额</button>
     <button class="tag" onclick="sortCards(this,'turnover')">换手率</button>
+    <button class="tag" onclick="sortCards(this,'chip')">筹码集中</button>
   </div>`;
 }
 
@@ -310,20 +320,21 @@ function card(s,i){
   var fund=Math.min(100,Math.max(0,40+(s.main_net||0)/2000000));
   var value=Math.min(100,Math.max(0,80-(((s.pe||s.pe_ttm)||50)*.35)-((s.pb||3)*4)));
   var tech=Math.min(100,Math.max(0,(s.turnover||0)*10+Math.abs(s.pct||0)*3));
-  return '<div class="card" data-score="'+(s.score||0)+'" data-price="'+(s.price||0)+'" data-pct="'+(s.pct||0)+'" data-amount="'+(s.amount||0)+'" data-turnover="'+(s.turnover||0)+'">'
+  return '<div class="card" data-score="'+(s.score||0)+'" data-price="'+(s.price||0)+'" data-pct="'+(s.pct||0)+'" data-amount="'+(s.amount||0)+'" data-turnover="'+(s.turnover||0)+'" data-chip="'+(s.chip_concentration_90==null?999:s.chip_concentration_90)+'">'
     +'<div class="card-top" onclick="toggleCard(this)">'
       +'<div class="stock-main"><div class="name-row"><span class="rank">#'+(i+1)+'</span><span class="name">'+esc(s.name)+'</span><span class="code">'+esc(s.code)+'</span></div><div class="badges">'+badge(s)+'</div></div>'
       +'<div class="price-block"><div class="price">'+num(s.price,2)+'</div><div class="pct '+cls(s.pct)+'">'+pct+'</div></div>'
     +'</div>'
     +'<div class="score-bar-wrap"><div class="score-bar-fill" style="width:'+scoreWidth+'%"></div></div>'
     +'<div class="concept-row">'+conceptHtml+'</div>'
-    +'<div class="quick-grid"><div><span>成交额</span><strong>'+moneyYi(s.amount)+'</strong></div><div><span>换手</span><strong>'+num(s.turnover,2)+'%</strong></div><div><span>主力</span><strong class="'+cls(s.main_net)+'">'+moneyWan(s.main_net)+'</strong></div></div>'
+    +'<div class="quick-grid"><div><span>成交额</span><strong>'+moneyYi(s.amount)+'</strong></div><div><span>换手</span><strong>'+num(s.turnover,2)+'%</strong></div><div><span>筹码集中</span><strong>'+chipText(s.chip_concentration_90)+'</strong></div><div><span>主力</span><strong class="'+cls(s.main_net)+'">'+moneyWan(s.main_net)+'</strong></div></div>'
     +'<div class="card-detail">'
       +'<div class="total-row"><span class="total-label">综合评分</span><span class="total-val">'+num(s.score,2)+' / 100</span></div>'
       +'<div class="dim-rows">'+drow('活跃',active,'#4fa3ff')+drow('资金',fund,'#b06aff')+drow('估值',value,'#ff9f43')+drow('技术',tech,'#f0a500')+'</div>'
       +'<div class="detail-grid">'
         +di('现价',num(s.price,2))+di('涨跌幅','<span class="'+cls(s.pct)+'">'+pct+'</span>')
         +di('成交额',moneyYi(s.amount))+di('换手率',num(s.turnover,2)+'%')
+        +di('90%筹码集中度',chipText(s.chip_concentration_90))
         +di('动态PE',num(s.pe,2))+di('TTM PE',num(s.pe_ttm,2))
         +di('PB',num(s.pb,2))+di('流通市值',moneyYi(s.float_cap))
         +di('主力净流入','<span class="'+cls(s.main_net)+'">'+moneyWan(s.main_net)+'</span>')+di('相关概念',concepts.length?concepts.map(esc).join(' / '):'暂无')
@@ -333,6 +344,7 @@ function card(s,i){
 function badge(s){
   var b=['<span class="badge b-price">低价</span>'];
   if(s.price<2)b.push('<span class="badge b-hot">2元内</span>');else if(s.price<5)b.push('<span class="badge b-hot">5元内</span>');
+  if(s.chip_concentration_90!=null&&s.chip_concentration_90<=12)b.push('<span class="badge b-fund">筹码≤12%</span>');
   if((s.turnover||0)>=3)b.push('<span class="badge b-tech">活跃换手</span>');
   if((s.amount||0)>=100000000)b.push('<span class="badge b-tech">成交过亿</span>');
   if((s.main_net||0)>0)b.push('<span class="badge b-fund">主力净入</span>');
@@ -342,7 +354,7 @@ function badge(s){
 }
 
 function switchBucket(k,el){activeBucket=k;document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});el.classList.add('active');document.getElementById('p'+k).classList.add('active')}
-function sortCards(el,key){var panel=el.closest('.panel');panel.querySelectorAll('.tag').forEach(function(t){t.classList.remove('active')});el.classList.add('active');var list=panel.querySelector('.list');var cards=Array.prototype.slice.call(list.querySelectorAll('.card'));cards.sort(function(a,b){var av=parseFloat(a.dataset[key]||0),bv=parseFloat(b.dataset[key]||0);return key==='price'?av-bv:bv-av});cards.forEach(function(c){list.appendChild(c)})}
+function sortCards(el,key){var panel=el.closest('.panel');panel.querySelectorAll('.tag').forEach(function(t){t.classList.remove('active')});el.classList.add('active');var list=panel.querySelector('.list');var cards=Array.prototype.slice.call(list.querySelectorAll('.card'));cards.sort(function(a,b){var av=parseFloat(a.dataset[key]||0),bv=parseFloat(b.dataset[key]||0);return (key==='price'||key==='chip')?av-bv:bv-av});cards.forEach(function(c){list.appendChild(c)})}
 function toggleCard(topEl){topEl.parentElement.querySelector('.card-detail').classList.toggle('open')}
 function drow(l,v,c){v=Math.max(0,Math.min(100,Math.round(v)));return '<div class="dim-row"><div class="dim-name">'+l+'</div><div class="dim-bg"><div class="dim-fill" style="width:'+v+'%;background:'+c+'"></div></div><div class="dim-num" style="color:'+c+'">'+v+'</div></div>'}
 function di(l,v){return '<div class="di"><div class="di-l">'+l+'</div><div class="di-v">'+v+'</div></div>'}
