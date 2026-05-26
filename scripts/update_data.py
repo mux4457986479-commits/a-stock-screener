@@ -34,6 +34,7 @@ FS = "m:1+t:2,m:1+t:23,m:0+t:6,m:0+t:80"
 DATACENTER_URL = "https://datacenter-web.eastmoney.com/api/data/v1/get"
 DATACENTER_TOKEN = "894050c76af8597a853f5b408b759f5d"
 SINA_URL = "https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData"
+TENCENT_URL = "https://qt.gtimg.cn/q="
 CHIP_CACHE: dict[str, float | None] = {}
 
 
@@ -198,6 +199,110 @@ def fetch_sina_all(page_size: int, max_pages: int, timeout: int, sleep: float) -
             break
         time.sleep(sleep)
     return rows
+
+
+def normalize_code(code: str) -> str:
+    code = str(code or "").strip().lower()
+    if code.startswith(("sh", "sz", "bj")):
+        code = code[2:]
+    if "." in code:
+        code = code.split(".")[0]
+    return code.zfill(6) if code.isdigit() else code
+
+
+def tencent_prefix(code: str) -> str:
+    code = normalize_code(code)
+    if code.startswith(("6", "9")):
+        return f"sh{code}"
+    if code.startswith("8"):
+        return f"bj{code}"
+    return f"sz{code}"
+
+
+def request_tencent_text(codes: list[str], timeout: int) -> str:
+    url = TENCENT_URL + ",".join(tencent_prefix(code) for code in codes)
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36",
+            "Referer": "https://gu.qq.com/",
+            "Accept": "*/*",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read().decode("gbk", errors="ignore")
+
+
+def parse_tencent_line(line: str) -> dict[str, Any] | None:
+    if not line.strip() or "=" not in line or '"' not in line:
+        return None
+    key = line.split("=", 1)[0].split("_")[-1]
+    vals = line.split('"', 2)[1].split("~")
+    if len(vals) < 53:
+        return None
+    code = normalize_code(key)
+    name = vals[1]
+    price = to_float(vals[3])
+    pct = to_float(vals[32])
+    if not code or not name or price is None or pct is None:
+        return None
+    amount_wan = to_float(vals[37])
+    total_cap_yi = to_float(vals[44])
+    float_cap_yi = to_float(vals[45])
+    return {
+        "code": code,
+        "name": name,
+        "price": price,
+        "pct": pct,
+        "amount": amount_wan * 10_000 if amount_wan is not None else None,
+        "turnover": to_float(vals[38]),
+        "pe": to_float(vals[52]),
+        "pe_ttm": to_float(vals[39]),
+        "pb": to_float(vals[46]),
+        "total_cap": total_cap_yi * 100_000_000 if total_cap_yi is not None else None,
+        "float_cap": float_cap_yi * 100_000_000 if float_cap_yi is not None else None,
+        "main_net": None,
+        "concepts": [],
+    }
+
+
+def fetch_tencent_quotes(codes: list[str], batch_size: int, retries: int, timeout: int, sleep: float) -> list[dict[str, Any]]:
+    stocks: list[dict[str, Any]] = []
+    unique_codes = list(dict.fromkeys(normalize_code(code) for code in codes if normalize_code(code)))
+    for start in range(0, len(unique_codes), batch_size):
+        batch = unique_codes[start:start + batch_size]
+        last_error: Exception | None = None
+        for attempt in range(retries + 1):
+            try:
+                text = request_tencent_text(batch, timeout=timeout)
+                for line in text.strip().split(";"):
+                    stock = parse_tencent_line(line)
+                    if stock:
+                        stocks.append(stock)
+                break
+            except Exception as exc:
+                last_error = exc
+                time.sleep(0.8 * (attempt + 1))
+        else:
+            print(f"tencent batch {start // batch_size + 1} failed: {last_error}")
+        time.sleep(sleep)
+    return stocks
+
+
+def fetch_tencent_all(args: argparse.Namespace) -> list[dict[str, Any]]:
+    """Use a-stock-data's Tencent quote recipe for real-time fields."""
+    codes: list[str] = []
+    try:
+        dc_rows = fetch_datacenter_all(args.page_size, args.max_pages, args.timeout, args.sleep)
+        codes = [normalize_code(row.get("SECURITY_CODE") or "") for row in dc_rows]
+    except Exception as exc:
+        print(f"datacenter universe failed, fallback to sina universe: {exc}")
+    if not codes:
+        sina_rows = fetch_sina_all(args.page_size, args.max_pages, args.timeout, args.sleep)
+        codes = [normalize_code(row.get("code") or row.get("symbol") or "") for row in sina_rows]
+    if not codes:
+        raise RuntimeError("无法获取 A 股代码池")
+    return fetch_tencent_quotes(codes, args.tencent_batch_size, args.retries, args.timeout, args.sleep)
 
 
 def parse_stock(item: dict[str, Any]) -> dict[str, Any] | None:
@@ -407,21 +512,28 @@ def add_concepts(buckets: dict[str, list[dict[str, Any]]], concept_limit: int, s
 
 
 def make_payload(args: argparse.Namespace) -> dict[str, Any]:
-    source = "eastmoney-push2"
+    source = "tencent"
     try:
-        raw_rows = fetch_all(args.page_size, args.max_pages, args.retries, args.timeout, args.sleep)
-        stocks = [stock for item in raw_rows if (stock := parse_stock(item))]
-    except Exception as exc:
-        print(f"push2 failed, fallback to datacenter-web: {exc}")
+        stocks = fetch_tencent_all(args)
+    except Exception as tencent_exc:
+        print(f"tencent failed, fallback to eastmoney-push2: {tencent_exc}")
         try:
-            raw_rows = fetch_datacenter_all(args.page_size, args.max_pages, args.timeout, args.sleep)
-            stocks = [stock for item in raw_rows if (stock := parse_datacenter_stock(item))]
-            source = "eastmoney-datacenter"
-        except Exception as dc_exc:
-            print(f"datacenter failed, fallback to sina: {dc_exc}")
-            raw_rows = fetch_sina_all(args.page_size, args.max_pages, args.timeout, args.sleep)
-            stocks = [stock for item in raw_rows if (stock := parse_sina_stock(item))]
-            source = "sina"
+            raw_rows = fetch_all(args.page_size, args.max_pages, args.retries, args.timeout, args.sleep)
+            stocks = [stock for item in raw_rows if (stock := parse_stock(item))]
+            source = "eastmoney-push2"
+        except Exception as exc:
+            print(f"push2 failed, fallback to datacenter-web: {exc}")
+            try:
+                raw_rows = fetch_datacenter_all(args.page_size, args.max_pages, args.timeout, args.sleep)
+                stocks = [stock for item in raw_rows if (stock := parse_datacenter_stock(item))]
+                source = "eastmoney-datacenter"
+            except Exception as dc_exc:
+                print(f"datacenter failed, fallback to sina: {dc_exc}")
+                raw_rows = fetch_sina_all(args.page_size, args.max_pages, args.timeout, args.sleep)
+                stocks = [stock for item in raw_rows if (stock := parse_sina_stock(item))]
+                source = "sina"
+    if not stocks:
+        raise RuntimeError("所有行情源均未返回有效股票数据")
     for stock in stocks:
         stock["score"] = score(stock)
 
@@ -440,6 +552,7 @@ def make_payload(args: argparse.Namespace) -> dict[str, Any]:
 
     return {
         "ok": True,
+        "stale": False,
         "updated_at": now_iso(),
         "generated_at": now_iso(),
         "source": source,
@@ -473,6 +586,7 @@ def main() -> int:
     parser.add_argument("--timeout", type=int, default=15)
     parser.add_argument("--retries", type=int, default=3)
     parser.add_argument("--sleep", type=float, default=0.12)
+    parser.add_argument("--tencent-batch-size", type=int, default=60)
     parser.add_argument("--concepts", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--concept-limit", type=int, default=180)
     parser.add_argument("--concept-sleep", type=float, default=0.04)
@@ -488,8 +602,9 @@ def main() -> int:
     except Exception as exc:
         previous = load_previous(output)
         if previous and previous.get("buckets"):
-            previous["ok"] = False
-            previous["message"] = f"本次更新失败，当前显示最近一次成功数据：{exc}"
+            previous["ok"] = True
+            previous["stale"] = True
+            previous["message"] = f"云端本次刷新未成功，当前显示最近一次成功数据。原因：{exc}"
             previous["generated_at"] = now_iso()
             payload = previous
         else:
