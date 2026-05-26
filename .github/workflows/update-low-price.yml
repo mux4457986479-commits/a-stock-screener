@@ -23,11 +23,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install chip data dependency
-        run: python -m pip install --upgrade akshare py-mini-racer
-
       - name: Fetch stock data
-        run: python scripts/update_data.py --output data.json --limit 120 --chip-threshold 12 --chip-scan-limit 60 --no-require-chip
+        run: python scripts/update_data.py --output data.json --limit 120 --chip-threshold 12 --chip-scan-limit 360
 
       - name: Commit updated data
         uses: stefanzweifel/git-auto-commit-action@v5

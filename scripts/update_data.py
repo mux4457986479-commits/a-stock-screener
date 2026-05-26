@@ -401,23 +401,114 @@ def fetch_chip_concentration(code: str) -> float | None:
     if code in CHIP_CACHE:
         return CHIP_CACHE[code]
     try:
-        import akshare as ak  # type: ignore
-
-        df = ak.stock_cyq_em(symbol=code)
-        if df is None or df.empty or "90集中度" not in df.columns:
+        rows = fetch_chip_kline(code)
+        if len(rows) < 30:
             CHIP_CACHE[code] = None
             return None
-        value = to_float(df["90集中度"].iloc[-1])
+        value = calc_chip_concentration_90(rows)
         if value is None or not math.isfinite(value):
             CHIP_CACHE[code] = None
             return None
-        if value <= 1:
-            value *= 100
         CHIP_CACHE[code] = round(value, 2)
         return CHIP_CACHE[code]
     except Exception:
         CHIP_CACHE[code] = None
         return None
+
+
+def eastmoney_secid(code: str) -> str:
+    code = normalize_code(code)
+    market = "1" if code.startswith(("6", "9")) else "0"
+    return f"{market}.{code}"
+
+
+def fetch_chip_kline(code: str, timeout: int = 12) -> list[dict[str, float]]:
+    params = {
+        "secid": eastmoney_secid(code),
+        "klt": 101,
+        "fqt": 1,
+        "lmt": 260,
+        "end": "20500101",
+        "iscca": 1,
+        "fields1": "f1,f2,f3,f4,f5,f6,f7,f8",
+        "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
+        "_": int(time.time() * 1000),
+    }
+    url = "https://push2his.eastmoney.com/api/qt/stock/kline/get?" + urllib.parse.urlencode(params)
+    payload = request_json(url, timeout=timeout)
+    klines = payload.get("data", {}).get("klines") or []
+    rows: list[dict[str, float]] = []
+    for line in klines:
+        parts = str(line).split(",")
+        if len(parts) < 11:
+            continue
+        close = to_float(parts[2])
+        high = to_float(parts[3])
+        low = to_float(parts[4])
+        turnover = to_float(parts[10])
+        if close is None or high is None or low is None or turnover is None:
+            continue
+        rows.append({"close": close, "high": high, "low": low, "turnover": turnover})
+    return rows
+
+
+def calc_chip_concentration_90(rows: list[dict[str, float]], index: int | None = None) -> float | None:
+    """Pure-Python port of the public CYQ algorithm used by AKShare/Eastmoney."""
+    if not rows:
+        return None
+    index = len(rows) - 1 if index is None else index
+    start = max(0, index - 120)
+    window = rows[start:index + 1]
+    max_price = max(row["high"] for row in window)
+    min_price = min(row["low"] for row in window)
+    factor = 150
+    accuracy = max(0.01, (max_price - min_price) / (factor - 1))
+    chips = [0.0] * factor
+
+    for row in rows[:index + 1]:
+        turnover = max(0.0, min(1.0, row["turnover"] / 100.0))
+        avg_price = (row["high"] + row["low"] + row["close"]) / 3.0
+        if accuracy <= 0:
+            continue
+        min_offset = math.floor((row["low"] - min_price) / accuracy)
+        max_offset = math.ceil((row["high"] - min_price) / accuracy)
+        start_offset = max(0, min(factor - 1, min_offset))
+        end_offset = max(0, min(factor - 1, max_offset))
+        if end_offset < start_offset:
+            continue
+        weights: list[tuple[int, float]] = []
+        for slot in range(start_offset, end_offset + 1):
+            price = min_price + slot * accuracy
+            height = max(0.0, 1.0 - abs(price - avg_price) / max(accuracy, row["high"] - row["low"] + accuracy))
+            if height > 0:
+                weights.append((slot, height))
+        weight_sum = sum(weight for _, weight in weights)
+        if weight_sum <= 0:
+            continue
+        keep = 1.0 - turnover
+        chips = [value * keep for value in chips]
+        for slot, weight in weights:
+            chips[slot] += turnover * weight / weight_sum
+
+    total = sum(chips)
+    if total <= 0:
+        return None
+
+    def cost_at(percent: float) -> float:
+        target = total * percent
+        acc = 0.0
+        for slot, value in enumerate(chips):
+            acc += value
+            if acc >= target:
+                return min_price + slot * accuracy
+        return min_price + (factor - 1) * accuracy
+
+    low_90 = cost_at(0.05)
+    high_90 = cost_at(0.95)
+    denominator = low_90 + high_90
+    if denominator <= 0:
+        return None
+    return (high_90 - low_90) / denominator * 100.0
 
 
 def accepted_base(stock: dict[str, Any], threshold: float) -> bool:
