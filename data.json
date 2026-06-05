@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-06-05T17:02:50+08:00",
-  "generated_at": "2026-06-05T17:02:50+08:00",
+  "updated_at": "2026-06-05T22:11:57+08:00",
+  "generated_at": "2026-06-05T22:11:57+08:00",
   "source": "tencent",
   "total_count": 5185,
   "message": "success",
@@ -14,10 +14,11 @@
   "limit": 120,
   "chip_threshold": 12.0,
   "require_chip": true,
+  "min_volume_ratio": 1.5,
   "chip_stats": {
-    "scanned": 360,
+    "scanned": 107,
     "ok": 0,
-    "failed": 360
+    "failed": 107
   },
   "buckets": {
     "10": [],
