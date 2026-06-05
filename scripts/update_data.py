@@ -28,7 +28,7 @@ EASTMONEY_URLS = [
 ]
 
 FIELDS = ",".join([
-    "f2", "f3", "f5", "f6", "f8", "f9", "f12", "f14", "f20", "f21", "f23", "f62", "f115",
+    "f2", "f3", "f5", "f6", "f8", "f9", "f10", "f12", "f14", "f20", "f21", "f23", "f62", "f115",
 ])
 FS = "m:1+t:2,m:1+t:23,m:0+t:6,m:0+t:80"
 DATACENTER_URL = "https://datacenter-web.eastmoney.com/api/data/v1/get"
@@ -146,6 +146,7 @@ def fetch_datacenter_page(page: int, page_size: int, timeout: int) -> list[dict[
             "f8~01~SECURITY_CODE~TURNOVERRATE",
             "f3~01~SECURITY_CODE~CHANGE_RATE",
             "f9~01~SECURITY_CODE~PE_DYNAMIC",
+            "f10~01~SECURITY_CODE~VOLUME_RATIO",
             "f6~01~SECURITY_CODE~AMOUNT",
             "f23~01~SECURITY_CODE~PB",
         ]),
@@ -256,6 +257,7 @@ def parse_tencent_line(line: str) -> dict[str, Any] | None:
         "pct": pct,
         "amount": amount_wan * 10_000 if amount_wan is not None else None,
         "turnover": to_float(vals[38]),
+        "vol_ratio": to_float(vals[49]),
         "pe": to_float(vals[52]),
         "pe_ttm": to_float(vals[39]),
         "pb": to_float(vals[46]),
@@ -319,6 +321,7 @@ def parse_stock(item: dict[str, Any]) -> dict[str, Any] | None:
         "pct": pct,
         "amount": to_float(item.get("f6")),
         "turnover": to_float(item.get("f8")),
+        "vol_ratio": to_float(item.get("f10")),
         "pe": to_float(item.get("f9")),
         "pe_ttm": to_float(item.get("f115")),
         "pb": to_float(item.get("f23")),
@@ -343,6 +346,7 @@ def parse_datacenter_stock(item: dict[str, Any]) -> dict[str, Any] | None:
         "pct": pct,
         "amount": to_float(item.get("AMOUNT")),
         "turnover": to_float(item.get("TURNOVERRATE")),
+        "vol_ratio": to_float(item.get("VOLUME_RATIO")),
         "pe": to_float(item.get("PE_DYNAMIC")),
         "pe_ttm": None,
         "pb": to_float(item.get("PB")),
@@ -373,6 +377,7 @@ def parse_sina_stock(item: dict[str, Any]) -> dict[str, Any] | None:
         "pct": pct,
         "amount": to_float(item.get("amount")),
         "turnover": to_float(item.get("turnoverratio")),
+        "vol_ratio": to_float(item.get("volumeratio")),
         "pe": to_float(item.get("per")),
         "pe_ttm": None,
         "pb": to_float(item.get("pb")),
@@ -511,7 +516,7 @@ def calc_chip_concentration_90(rows: list[dict[str, float]], index: int | None =
     return (high_90 - low_90) / denominator * 100.0
 
 
-def accepted_base(stock: dict[str, Any], threshold: float) -> bool:
+def accepted_base(stock: dict[str, Any], threshold: float, min_volume_ratio: float | None = None) -> bool:
     name_upper = stock["name"].upper()
     if stock["price"] <= 0 or stock["price"] >= threshold:
         return False
@@ -519,11 +524,15 @@ def accepted_base(stock: dict[str, Any], threshold: float) -> bool:
         return False
     if stock["pct"] <= -9.5:
         return False
+    if min_volume_ratio is not None:
+        vol_ratio = stock.get("vol_ratio")
+        if vol_ratio is None or vol_ratio <= min_volume_ratio:
+            return False
     return True
 
 
-def accepted(stock: dict[str, Any], threshold: float, chip_threshold: float | None, require_chip: bool) -> bool:
-    if not accepted_base(stock, threshold):
+def accepted(stock: dict[str, Any], threshold: float, chip_threshold: float | None, require_chip: bool, min_volume_ratio: float | None) -> bool:
+    if not accepted_base(stock, threshold, min_volume_ratio):
         return False
     if chip_threshold is None:
         return True
@@ -533,8 +542,8 @@ def accepted(stock: dict[str, Any], threshold: float, chip_threshold: float | No
     return chip <= chip_threshold
 
 
-def enrich_chip_concentration(stocks: list[dict[str, Any]], scan_limit: int, sleep: float) -> dict[str, int]:
-    candidates = [s for s in stocks if accepted_base(s, 10.0)]
+def enrich_chip_concentration(stocks: list[dict[str, Any]], scan_limit: int, sleep: float, min_volume_ratio: float | None) -> dict[str, int]:
+    candidates = [s for s in stocks if accepted_base(s, 10.0, min_volume_ratio)]
     candidates.sort(key=lambda s: s.get("score") or 0, reverse=True)
     candidates = candidates[:scan_limit]
     ok = 0
@@ -630,11 +639,11 @@ def make_payload(args: argparse.Namespace) -> dict[str, Any]:
 
     chip_stats = {"scanned": 0, "ok": 0, "failed": 0}
     if args.chip_threshold is not None:
-        chip_stats = enrich_chip_concentration(stocks, args.chip_scan_limit, args.chip_sleep)
+        chip_stats = enrich_chip_concentration(stocks, args.chip_scan_limit, args.chip_sleep, args.min_volume_ratio)
 
     buckets: dict[str, list[dict[str, Any]]] = {}
     for threshold in args.thresholds:
-        selected = [s.copy() for s in stocks if accepted(s, threshold, args.chip_threshold, args.require_chip)]
+        selected = [s.copy() for s in stocks if accepted(s, threshold, args.chip_threshold, args.require_chip, args.min_volume_ratio)]
         selected.sort(key=lambda s: s["score"], reverse=True)
         buckets[str(int(threshold) if threshold.is_integer() else threshold)] = selected[: args.limit]
 
@@ -653,6 +662,7 @@ def make_payload(args: argparse.Namespace) -> dict[str, Any]:
         "limit": args.limit,
         "chip_threshold": args.chip_threshold,
         "require_chip": args.require_chip,
+        "min_volume_ratio": args.min_volume_ratio,
         "chip_stats": chip_stats,
         "buckets": buckets,
     }
@@ -678,6 +688,7 @@ def main() -> int:
     parser.add_argument("--retries", type=int, default=3)
     parser.add_argument("--sleep", type=float, default=0.12)
     parser.add_argument("--tencent-batch-size", type=int, default=60)
+    parser.add_argument("--min-volume-ratio", type=float, default=1.5)
     parser.add_argument("--concepts", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--concept-limit", type=int, default=180)
     parser.add_argument("--concept-sleep", type=float, default=0.04)
@@ -708,6 +719,7 @@ def main() -> int:
                 "message": f"更新失败：{exc}",
                 "thresholds": args.thresholds,
                 "limit": args.limit,
+                "min_volume_ratio": args.min_volume_ratio,
                 "buckets": {"10": [], "5": [], "2": []},
             }
     output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
