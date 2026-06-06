@@ -284,7 +284,11 @@ function render(){
   document.getElementById('sTime').textContent=fmtTime(DATA.updated_at);
   var notice=document.getElementById('notice');
   notice.className=DATA.ok?'notice':'notice warn';
-  var chipRule=DATA.chip_threshold!=null?'；90%筹码集中度≤'+num(DATA.chip_threshold,2)+'%':'';
+  var chipRule=DATA.chip_threshold!=null
+    ?(DATA.require_chip
+      ?'；90%筹码集中度≤'+num(DATA.chip_threshold,2)+'%'
+      :'；筹码数据可用时要求90%集中度≤'+num(DATA.chip_threshold,2)+'%，暂无时保留')
+    :'';
   var vrRule=DATA.min_volume_ratio!=null?'；量比>'+num(DATA.min_volume_ratio,2):'';
   notice.textContent=(DATA.ok?'规则：':'提示：')+(DATA.message||'')+' 低门槛筛选：10元/5元/2元以下，剔除ST、退市和跌停附近个股'+chipRule+vrRule+'；成交额、换手率、估值、主力净流入用于评分排序。';
 
