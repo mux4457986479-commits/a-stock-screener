@@ -1,10 +1,10 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-06-06T21:52:19+08:00",
-  "generated_at": "2026-06-06T21:52:19+08:00",
+  "updated_at": "2026-06-06T22:05:26+08:00",
+  "generated_at": "2026-06-06T22:05:26+08:00",
   "source": "tencent",
-  "total_count": 5185,
+  "total_count": 5206,
   "message": "success",
   "thresholds": [
     10.0,
@@ -17,9 +17,9 @@
   "require_holder_decline": true,
   "holder_stats": {
     "scanned": 107,
-    "ok": 105,
-    "declined": 64,
-    "failed": 2
+    "ok": 103,
+    "declined": 63,
+    "failed": 4
   },
   "min_volume_ratio": 1.5,
   "chip_stats": {
@@ -363,34 +363,6 @@
         "holder_num": 66348.0,
         "holder_change_ratio": -0.013563000136,
         "holder_avg_shares": 37218.3624977392,
-        "holder_date": "2026-03-31"
-      },
-      {
-        "code": "600408",
-        "name": "安泰集团",
-        "price": 3.59,
-        "pct": 3.46,
-        "amount": 1050260000.0,
-        "turnover": 28.09,
-        "vol_ratio": 2.81,
-        "pe": -18.1,
-        "pe_ttm": -12.38,
-        "pb": 3.12,
-        "total_cap": 3614000000.0,
-        "float_cap": 3614000000.0,
-        "main_net": null,
-        "concepts": [
-          "煤炭",
-          "焦炭Ⅱ",
-          "焦炭Ⅲ",
-          "山西板块",
-          "反转股",
-          "最近多板"
-        ],
-        "score": 98.54,
-        "holder_num": 119181.0,
-        "holder_change_ratio": -2.000592037101,
-        "holder_avg_shares": 8447.65524706119,
         "holder_date": "2026-03-31"
       },
       {
@@ -1864,27 +1836,6 @@
         "holder_change_ratio": -4.701505816411,
         "holder_avg_shares": 8217.36452115462,
         "holder_date": "2026-04-30"
-      },
-      {
-        "code": "600408",
-        "name": "安泰集团",
-        "price": 3.59,
-        "pct": 3.46,
-        "amount": 1050260000.0,
-        "turnover": 28.09,
-        "vol_ratio": 2.81,
-        "pe": -18.1,
-        "pe_ttm": -12.38,
-        "pb": 3.12,
-        "total_cap": 3614000000.0,
-        "float_cap": 3614000000.0,
-        "main_net": null,
-        "concepts": [],
-        "score": 98.54,
-        "holder_num": 119181.0,
-        "holder_change_ratio": -2.000592037101,
-        "holder_avg_shares": 8447.65524706119,
-        "holder_date": "2026-03-31"
       },
       {
         "code": "600984",
