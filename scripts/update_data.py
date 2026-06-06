@@ -36,6 +36,7 @@ DATACENTER_TOKEN = "894050c76af8597a853f5b408b759f5d"
 SINA_URL = "https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData"
 TENCENT_URL = "https://qt.gtimg.cn/q="
 CHIP_CACHE: dict[str, float | None] = {}
+HOLDER_CACHE: dict[str, dict[str, Any] | None] = {}
 
 
 def now_iso() -> str:
@@ -398,7 +399,45 @@ def score(stock: dict[str, Any]) -> float:
     valuation_score = max(0.0, 30.0 - pb * 4.0 - pe * 0.18)
     momentum_score = 8.0 - abs(stock.get("pct") or 0) * 0.7
     cap_score = min((stock.get("float_cap") or 0) / 10_000_000_000, 2.0) * 4
-    return round(amount_score + turnover_score + inflow_score + valuation_score + momentum_score + cap_score, 2)
+    holder_change = stock.get("holder_change_ratio")
+    holder_score = min(max(-(holder_change or 0), 0.0), 10.0) * 1.5
+    return round(amount_score + turnover_score + inflow_score + valuation_score + momentum_score + cap_score + holder_score, 2)
+
+
+def fetch_holder_trend(code: str, timeout: int = 12) -> dict[str, Any] | None:
+    """Return the latest disclosed shareholder-count change from Eastmoney."""
+    if code in HOLDER_CACHE:
+        return HOLDER_CACHE[code]
+    params = {
+        "reportName": "RPT_HOLDERNUMLATEST",
+        "columns": "ALL",
+        "filter": f'(SECURITY_CODE="{normalize_code(code)}")',
+        "pageNumber": 1,
+        "pageSize": 1,
+        "sortColumns": "END_DATE",
+        "sortTypes": "-1",
+        "source": "WEB",
+        "client": "WEB",
+        "_": int(time.time() * 1000),
+    }
+    try:
+        payload = request_json(DATACENTER_URL + "?" + urllib.parse.urlencode(params), timeout=timeout)
+        rows = payload.get("result", {}).get("data") or []
+        if not rows:
+            HOLDER_CACHE[code] = None
+            return None
+        row = rows[0]
+        result = {
+            "holder_num": to_float(row.get("HOLDER_NUM")),
+            "holder_change_ratio": to_float(row.get("HOLDER_NUM_RATIO")),
+            "holder_avg_shares": to_float(row.get("AVG_HOLD_NUM")),
+            "holder_date": str(row.get("END_DATE") or "")[:10],
+        }
+        HOLDER_CACHE[code] = result
+        return result
+    except Exception:
+        HOLDER_CACHE[code] = None
+        return None
 
 
 def fetch_chip_concentration(code: str) -> float | None:
@@ -531,9 +570,20 @@ def accepted_base(stock: dict[str, Any], threshold: float, min_volume_ratio: flo
     return True
 
 
-def accepted(stock: dict[str, Any], threshold: float, chip_threshold: float | None, require_chip: bool, min_volume_ratio: float | None) -> bool:
+def accepted(
+    stock: dict[str, Any],
+    threshold: float,
+    chip_threshold: float | None,
+    require_chip: bool,
+    min_volume_ratio: float | None,
+    require_holder_decline: bool = False,
+) -> bool:
     if not accepted_base(stock, threshold, min_volume_ratio):
         return False
+    if require_holder_decline:
+        holder_change = stock.get("holder_change_ratio")
+        if holder_change is None or holder_change >= 0:
+            return False
     if chip_threshold is None:
         return True
     chip = stock.get("chip_concentration_90")
@@ -559,6 +609,28 @@ def enrich_chip_concentration(stocks: list[dict[str, Any]], scan_limit: int, sle
             print(f"chip {index}/{len(candidates)} ok={ok} failed={failed}")
         time.sleep(sleep)
     return {"scanned": len(candidates), "ok": ok, "failed": failed}
+
+
+def enrich_holder_trend(stocks: list[dict[str, Any]], scan_limit: int, sleep: float, min_volume_ratio: float | None) -> dict[str, int]:
+    candidates = [s for s in stocks if accepted_base(s, 10.0, min_volume_ratio)]
+    candidates.sort(key=lambda s: s.get("score") or 0, reverse=True)
+    candidates = candidates[:scan_limit]
+    ok = 0
+    declined = 0
+    failed = 0
+    for index, stock in enumerate(candidates, start=1):
+        value = fetch_holder_trend(stock["code"])
+        if value is None or value.get("holder_change_ratio") is None:
+            failed += 1
+        else:
+            stock.update(value)
+            ok += 1
+            if value["holder_change_ratio"] < 0:
+                declined += 1
+        if index % 20 == 0:
+            print(f"holders {index}/{len(candidates)} ok={ok} declined={declined} failed={failed}")
+        time.sleep(sleep)
+    return {"scanned": len(candidates), "ok": ok, "declined": declined, "failed": failed}
 
 
 def fetch_concepts(code: str, timeout: int = 12) -> list[str]:
@@ -637,13 +709,32 @@ def make_payload(args: argparse.Namespace) -> dict[str, Any]:
     for stock in stocks:
         stock["score"] = score(stock)
 
+    holder_stats = {"scanned": 0, "ok": 0, "declined": 0, "failed": 0}
+    if args.holder_trend:
+        holder_stats = enrich_holder_trend(stocks, args.holder_scan_limit, args.holder_sleep, args.min_volume_ratio)
+
+    effective_chip_threshold = args.chip_threshold if args.chip_filter else None
     chip_stats = {"scanned": 0, "ok": 0, "failed": 0}
-    if args.chip_threshold is not None:
+    if effective_chip_threshold is not None:
         chip_stats = enrich_chip_concentration(stocks, args.chip_scan_limit, args.chip_sleep, args.min_volume_ratio)
+
+    for stock in stocks:
+        stock["score"] = score(stock)
 
     buckets: dict[str, list[dict[str, Any]]] = {}
     for threshold in args.thresholds:
-        selected = [s.copy() for s in stocks if accepted(s, threshold, args.chip_threshold, args.require_chip, args.min_volume_ratio)]
+        selected = [
+            s.copy()
+            for s in stocks
+            if accepted(
+                s,
+                threshold,
+                effective_chip_threshold,
+                args.require_chip,
+                args.min_volume_ratio,
+                args.require_holder_decline,
+            )
+        ]
         selected.sort(key=lambda s: s["score"], reverse=True)
         buckets[str(int(threshold) if threshold.is_integer() else threshold)] = selected[: args.limit]
 
@@ -660,8 +751,10 @@ def make_payload(args: argparse.Namespace) -> dict[str, Any]:
         "message": "success",
         "thresholds": args.thresholds,
         "limit": args.limit,
-        "chip_threshold": args.chip_threshold,
+        "chip_threshold": effective_chip_threshold,
         "require_chip": args.require_chip,
+        "require_holder_decline": args.require_holder_decline,
+        "holder_stats": holder_stats,
         "min_volume_ratio": args.min_volume_ratio,
         "chip_stats": chip_stats,
         "buckets": buckets,
@@ -693,9 +786,14 @@ def main() -> int:
     parser.add_argument("--concept-limit", type=int, default=180)
     parser.add_argument("--concept-sleep", type=float, default=0.04)
     parser.add_argument("--chip-threshold", type=float, default=12.0)
+    parser.add_argument("--chip-filter", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--chip-scan-limit", type=int, default=360)
     parser.add_argument("--chip-sleep", type=float, default=0.08)
     parser.add_argument("--require-chip", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--holder-trend", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--holder-scan-limit", type=int, default=360)
+    parser.add_argument("--holder-sleep", type=float, default=0.05)
+    parser.add_argument("--require-holder-decline", action=argparse.BooleanOptionalAction, default=False)
     args = parser.parse_args()
 
     output = Path(args.output)

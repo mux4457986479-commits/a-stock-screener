@@ -24,7 +24,7 @@ jobs:
           python-version: "3.11"
 
       - name: Fetch stock data
-        run: python scripts/update_data.py --output data.json --limit 120 --chip-threshold 12 --chip-scan-limit 360 --no-require-chip
+        run: python scripts/update_data.py --output data.json --limit 120 --no-chip-filter --no-require-chip --require-holder-decline --holder-scan-limit 360
 
       - name: Commit updated data
         uses: stefanzweifel/git-auto-commit-action@v5
