@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-07-22T15:07:47+08:00",
-  "generated_at": "2026-07-22T15:07:47+08:00",
+  "updated_at": "2026-07-22T17:46:53+08:00",
+  "generated_at": "2026-07-22T17:46:53+08:00",
   "source": "tencent",
   "total_count": 5187,
   "message": "success",
@@ -18,7 +18,7 @@
   "holder_stats": {
     "scanned": 59,
     "ok": 58,
-    "declined": 32,
+    "declined": 33,
     "failed": 1
   },
   "min_volume_ratio": 1.5,
@@ -48,8 +48,8 @@
           "塑料",
           "膜材料",
           "浙江板块",
-          "深股通",
-          "参股新三板"
+          "破增发价股",
+          "深股通"
         ],
         "score": 115.11,
         "holder_num": 49725.0,
@@ -105,7 +105,7 @@
           "大宗用纸",
           "浙江板块",
           "2026中报预增",
-          "破净股"
+          "深股通"
         ],
         "score": 111.37,
         "holder_num": 140911.0,
@@ -301,7 +301,7 @@
           "IT服务Ⅲ",
           "广西板块",
           "2026中报扭亏",
-          "破发股"
+          "沪股通"
         ],
         "score": 98.91,
         "holder_num": 45555.0,
@@ -758,6 +758,34 @@
         "holder_date": "2026-06-30"
       },
       {
+        "code": "300603",
+        "name": "立昂技术",
+        "price": 7.42,
+        "pct": 4.65,
+        "amount": 160190000.0,
+        "turnover": 5.82,
+        "vol_ratio": 1.74,
+        "pe": -28.07,
+        "pe_ttm": -19.23,
+        "pb": 2.73,
+        "total_cap": 2775000000.0,
+        "float_cap": 3449000000.0,
+        "main_net": null,
+        "concepts": [
+          "通信",
+          "通信服务",
+          "通信工程及服务",
+          "新疆板块",
+          "破增发价股",
+          "创业板综"
+        ],
+        "score": 67.92,
+        "holder_num": 37636.0,
+        "holder_change_ratio": -1.872034207645,
+        "holder_avg_shares": 12349.8307737273,
+        "holder_date": "2026-07-20"
+      },
+      {
         "code": "000803",
         "name": "山高环能",
         "price": 6.18,
@@ -786,34 +814,6 @@
         "holder_date": "2026-03-31"
       },
       {
-        "code": "603227",
-        "name": "雪峰科技",
-        "price": 7.02,
-        "pct": -1.54,
-        "amount": 112590000.0,
-        "turnover": 1.52,
-        "vol_ratio": 1.73,
-        "pe": 41.17,
-        "pe_ttm": 15.49,
-        "pb": 1.49,
-        "total_cap": 7523000000.0,
-        "float_cap": 7523000000.0,
-        "main_net": null,
-        "concepts": [
-          "基础化工",
-          "化学制品",
-          "民爆制品",
-          "新疆板块",
-          "沪股通",
-          "融资融券"
-        ],
-        "score": 51.5,
-        "holder_num": 32678.0,
-        "holder_change_ratio": -0.562943127529,
-        "holder_avg_shares": 32795.5410061815,
-        "holder_date": "2026-07-10"
-      },
-      {
         "code": "603058",
         "name": "永吉股份",
         "price": 8.05,
@@ -840,6 +840,34 @@
         "holder_change_ratio": -10.220994475138,
         "holder_avg_shares": 28355.1156239316,
         "holder_date": "2026-06-30"
+      },
+      {
+        "code": "002333",
+        "name": "罗普斯金",
+        "price": 4.98,
+        "pct": 5.73,
+        "amount": 111890000.0,
+        "turnover": 3.38,
+        "vol_ratio": 4.44,
+        "pe": 80.47,
+        "pe_ttm": 67.43,
+        "pb": 1.75,
+        "total_cap": 3319000000.0,
+        "float_cap": 3361000000.0,
+        "main_net": null,
+        "concepts": [
+          "建筑材料",
+          "装修建材",
+          "其他建材Ⅲ",
+          "江苏板块",
+          "破发股",
+          "房屋检测"
+        ],
+        "score": 45.5,
+        "holder_num": 18007.0,
+        "holder_change_ratio": -0.155253673413,
+        "holder_avg_shares": 37481.2461820403,
+        "holder_date": "2026-07-20"
       },
       {
         "code": "300175",
@@ -1178,6 +1206,27 @@
         "holder_change_ratio": -1.485110022549,
         "holder_avg_shares": 46363.8575769534,
         "holder_date": "2026-06-30"
+      },
+      {
+        "code": "002333",
+        "name": "罗普斯金",
+        "price": 4.98,
+        "pct": 5.73,
+        "amount": 111890000.0,
+        "turnover": 3.38,
+        "vol_ratio": 4.44,
+        "pe": 80.47,
+        "pe_ttm": 67.43,
+        "pb": 1.75,
+        "total_cap": 3319000000.0,
+        "float_cap": 3361000000.0,
+        "main_net": null,
+        "concepts": [],
+        "score": 45.5,
+        "holder_num": 18007.0,
+        "holder_change_ratio": -0.155253673413,
+        "holder_avg_shares": 37481.2461820403,
+        "holder_date": "2026-07-20"
       }
     ],
     "2": []
