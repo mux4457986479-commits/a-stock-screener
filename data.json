@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-08-17T15:32:59+08:00",
-  "generated_at": "2026-08-17T15:32:59+08:00",
+  "updated_at": "2026-08-17T16:10:39+08:00",
+  "generated_at": "2026-08-17T16:10:39+08:00",
   "source": "tencent",
   "total_count": 5194,
   "message": "success",
@@ -18,7 +18,7 @@
   "holder_stats": {
     "scanned": 145,
     "ok": 144,
-    "declined": 79,
+    "declined": 80,
     "failed": 1
   },
   "min_volume_ratio": 1.5,
@@ -727,6 +727,34 @@
         "holder_num": 93018.0,
         "holder_change_ratio": -2.689640021341,
         "holder_avg_shares": 26697.874583414,
+        "holder_date": "2026-08-10"
+      },
+      {
+        "code": "000564",
+        "name": "供销大集",
+        "price": 1.54,
+        "pct": 10.0,
+        "amount": 959530000.0,
+        "turnover": 4.2,
+        "vol_ratio": 3.37,
+        "pe": -50.94,
+        "pe_ttm": -15.41,
+        "pb": 1.92,
+        "total_cap": 23246000000.0,
+        "float_cap": 27808999999.999996,
+        "main_net": null,
+        "concepts": [
+          "商贸零售",
+          "一般零售",
+          "百货",
+          "陕西板块",
+          "股权分散",
+          "消费风格"
+        ],
+        "score": 88.93,
+        "holder_num": 287000.0,
+        "holder_change_ratio": -1.204819277108,
+        "holder_avg_shares": 62920.0813728223,
         "holder_date": "2026-08-10"
       },
       {
@@ -2369,6 +2397,27 @@
         "holder_date": "2026-08-10"
       },
       {
+        "code": "000564",
+        "name": "供销大集",
+        "price": 1.54,
+        "pct": 10.0,
+        "amount": 959530000.0,
+        "turnover": 4.2,
+        "vol_ratio": 3.37,
+        "pe": -50.94,
+        "pe_ttm": -15.41,
+        "pb": 1.92,
+        "total_cap": 23246000000.0,
+        "float_cap": 27808999999.999996,
+        "main_net": null,
+        "concepts": [],
+        "score": 88.93,
+        "holder_num": 287000.0,
+        "holder_change_ratio": -1.204819277108,
+        "holder_avg_shares": 62920.0813728223,
+        "holder_date": "2026-08-10"
+      },
+      {
         "code": "002172",
         "name": "澳洋健康",
         "price": 4.99,
@@ -2726,6 +2775,28 @@
         "holder_date": "2026-08-10"
       }
     ],
-    "2": []
+    "2": [
+      {
+        "code": "000564",
+        "name": "供销大集",
+        "price": 1.54,
+        "pct": 10.0,
+        "amount": 959530000.0,
+        "turnover": 4.2,
+        "vol_ratio": 3.37,
+        "pe": -50.94,
+        "pe_ttm": -15.41,
+        "pb": 1.92,
+        "total_cap": 23246000000.0,
+        "float_cap": 27808999999.999996,
+        "main_net": null,
+        "concepts": [],
+        "score": 88.93,
+        "holder_num": 287000.0,
+        "holder_change_ratio": -1.204819277108,
+        "holder_avg_shares": 62920.0813728223,
+        "holder_date": "2026-08-10"
+      }
+    ]
   }
 }
