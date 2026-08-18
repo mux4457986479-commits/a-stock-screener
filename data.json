@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-08-18T12:09:36+08:00",
-  "generated_at": "2026-08-18T12:09:36+08:00",
+  "updated_at": "2026-08-18T13:04:22+08:00",
+  "generated_at": "2026-08-18T13:04:22+08:00",
   "source": "tencent",
   "total_count": 5194,
   "message": "success",
@@ -18,7 +18,7 @@
   "holder_stats": {
     "scanned": 360,
     "ok": 356,
-    "declined": 210,
+    "declined": 211,
     "failed": 4
   },
   "min_volume_ratio": 1.5,
@@ -1484,6 +1484,34 @@
         "holder_change_ratio": -8.429706122655,
         "holder_avg_shares": 36454.7880697236,
         "holder_date": "2026-03-31"
+      },
+      {
+        "code": "002546",
+        "name": "新联电子",
+        "price": 8.29,
+        "pct": -3.83,
+        "amount": 217110000.0,
+        "turnover": 3.23,
+        "vol_ratio": 2.15,
+        "pe": 7.63,
+        "pe_ttm": 8.2,
+        "pb": 1.67,
+        "total_cap": 6642000000.0,
+        "float_cap": 6914000000.0,
+        "main_net": null,
+        "concepts": [
+          "电力设备",
+          "电网设备",
+          "电工仪器仪表",
+          "江苏板块",
+          "2026中报预增",
+          "深股通"
+        ],
+        "score": 80.59,
+        "holder_num": 81100.0,
+        "holder_change_ratio": -1.934703748489,
+        "holder_avg_shares": 10284.2058692972,
+        "holder_date": "2026-08-10"
       },
       {
         "code": "601665",
@@ -3360,34 +3388,6 @@
         "holder_change_ratio": -7.489589759408,
         "holder_avg_shares": 16035.6846229187,
         "holder_date": "2026-03-31"
-      },
-      {
-        "code": "603227",
-        "name": "雪峰科技",
-        "price": 7.94,
-        "pct": 2.45,
-        "amount": 98220000.0,
-        "turnover": 1.15,
-        "vol_ratio": 4.0,
-        "pe": 16.78,
-        "pe_ttm": 16.17,
-        "pb": 1.61,
-        "total_cap": 8509000000.0,
-        "float_cap": 8509000000.0,
-        "main_net": null,
-        "concepts": [
-          "基础化工",
-          "化学制品",
-          "民爆制品",
-          "新疆板块",
-          "沪股通",
-          "融资融券"
-        ],
-        "score": 53.34,
-        "holder_num": 32676.0,
-        "holder_change_ratio": -1.8620855358,
-        "holder_avg_shares": 32797.5483229281,
-        "holder_date": "2026-07-31"
       }
     ],
     "5": [
