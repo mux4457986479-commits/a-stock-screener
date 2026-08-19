@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-08-19T15:16:14+08:00",
-  "generated_at": "2026-08-19T15:16:14+08:00",
+  "updated_at": "2026-08-19T16:03:43+08:00",
+  "generated_at": "2026-08-19T16:03:43+08:00",
   "source": "tencent",
   "total_count": 5195,
   "message": "success",
@@ -18,7 +18,7 @@
   "holder_stats": {
     "scanned": 228,
     "ok": 225,
-    "declined": 126,
+    "declined": 127,
     "failed": 3
   },
   "min_volume_ratio": 1.5,
@@ -553,7 +553,7 @@
           "焦炭Ⅲ",
           "山西板块",
           "反内卷概念",
-          "低价股"
+          "机构重仓"
         ],
         "score": 97.4,
         "holder_num": 119181.0,
@@ -1372,6 +1372,34 @@
         "holder_change_ratio": -0.344624131735,
         "holder_avg_shares": 74755.7529367439,
         "holder_date": "2026-03-31"
+      },
+      {
+        "code": "300387",
+        "name": "富邦科技",
+        "price": 7.46,
+        "pct": -3.49,
+        "amount": 123350000.0,
+        "turnover": 5.67,
+        "vol_ratio": 1.93,
+        "pe": 20.27,
+        "pe_ttm": 34.39,
+        "pb": 1.5,
+        "total_cap": 2156000000.0,
+        "float_cap": 2156000000.0,
+        "main_net": null,
+        "concepts": [
+          "基础化工",
+          "农化制品",
+          "复合肥",
+          "湖北板块",
+          "微盘精选",
+          "创业板综"
+        ],
+        "score": 84.19,
+        "holder_num": 16476.0,
+        "holder_change_ratio": -18.809441679397,
+        "holder_avg_shares": 17544.125880068,
+        "holder_date": "2026-06-30"
       },
       {
         "code": "600496",
@@ -2849,7 +2877,7 @@
           "印染",
           "浙江板块",
           "价值股",
-          "标准普尔"
+          "破净股"
         ],
         "score": 52.04,
         "holder_num": 19760.0,
@@ -3359,34 +3387,6 @@
         "holder_num": 46160.0,
         "holder_change_ratio": -10.669014765932,
         "holder_avg_shares": 30630.1236568458,
-        "holder_date": "2026-03-31"
-      },
-      {
-        "code": "603326",
-        "name": "我乐家居",
-        "price": 6.86,
-        "pct": -3.92,
-        "amount": 50340000.0,
-        "turnover": 2.25,
-        "vol_ratio": 1.6,
-        "pe": 60.76,
-        "pe_ttm": 15.29,
-        "pb": 1.97,
-        "total_cap": 2190000000.0,
-        "float_cap": 2190000000.0,
-        "main_net": null,
-        "concepts": [
-          "轻工制造",
-          "家居用品",
-          "定制家居",
-          "江苏板块",
-          "昨日高振幅",
-          "机构重仓"
-        ],
-        "score": 37.21,
-        "holder_num": 11262.0,
-        "holder_change_ratio": -1.890408572175,
-        "holder_avg_shares": 28341.052210975,
         "holder_date": "2026-03-31"
       }
     ],
