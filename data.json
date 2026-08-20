@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-08-20T15:17:36+08:00",
-  "generated_at": "2026-08-20T15:17:36+08:00",
+  "updated_at": "2026-08-20T16:06:07+08:00",
+  "generated_at": "2026-08-20T16:06:07+08:00",
   "source": "tencent",
   "total_count": 5195,
   "message": "success",
@@ -18,7 +18,7 @@
   "holder_stats": {
     "scanned": 181,
     "ok": 178,
-    "declined": 96,
+    "declined": 95,
     "failed": 3
   },
   "min_volume_ratio": 1.5,
@@ -926,34 +926,6 @@
         "holder_date": "2026-06-30"
       },
       {
-        "code": "600851",
-        "name": "海欣股份",
-        "price": 8.96,
-        "pct": 4.55,
-        "amount": 333950000.0,
-        "turnover": 4.97,
-        "vol_ratio": 3.07,
-        "pe": 93.43,
-        "pe_ttm": 62.91,
-        "pb": 2.41,
-        "total_cap": 6614000000.0,
-        "float_cap": 10815000000.0,
-        "main_net": null,
-        "concepts": [
-          "医药生物",
-          "化学制药",
-          "化学制剂",
-          "上海板块",
-          "证金持股",
-          "沪股通"
-        ],
-        "score": 85.99,
-        "holder_num": 31187.0,
-        "holder_change_ratio": -3.618888682861,
-        "holder_avg_shares": 23670.3148747876,
-        "holder_date": "2026-03-31"
-      },
-      {
         "code": "000736",
         "name": "中交发展",
         "price": 4.47,
@@ -1197,7 +1169,7 @@
           "化学制剂",
           "浙江板块",
           "破发股",
-          "低价股"
+          "创业板综"
         ],
         "score": 82.26,
         "holder_num": 92480.0,
@@ -2149,7 +2121,7 @@
           "环保设备Ⅲ",
           "浙江板块",
           "破增发价股",
-          "破净股"
+          "机器人概念"
         ],
         "score": 53.45,
         "holder_num": 38234.0,
