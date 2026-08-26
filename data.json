@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-08-26T15:19:37+08:00",
-  "generated_at": "2026-08-26T15:19:37+08:00",
+  "updated_at": "2026-08-26T16:10:03+08:00",
+  "generated_at": "2026-08-26T16:10:03+08:00",
   "source": "tencent",
   "total_count": 5195,
   "message": "success",
@@ -581,7 +581,7 @@
           "高速公路",
           "广西板块",
           "趋势股",
-          "破净股"
+          "富时罗素"
         ],
         "score": 100.75,
         "holder_num": 49882.0,
@@ -1484,6 +1484,34 @@
         "holder_change_ratio": -0.18780620577,
         "holder_avg_shares": 102424.006980993,
         "holder_date": "2026-03-31"
+      },
+      {
+        "code": "301082",
+        "name": "久盛电气",
+        "price": 9.65,
+        "pct": 1.26,
+        "amount": 196030000.0,
+        "turnover": 7.23,
+        "vol_ratio": 2.65,
+        "pe": -104.23,
+        "pe_ttm": 77.21,
+        "pb": 2.8,
+        "total_cap": 2632000000.0,
+        "float_cap": 2839000000.0,
+        "main_net": null,
+        "concepts": [
+          "电力设备",
+          "电网设备",
+          "线缆部件及其他",
+          "浙江板块",
+          "专精特新",
+          "创业板综"
+        ],
+        "score": 87.59,
+        "holder_num": 19221.0,
+        "holder_change_ratio": -9.433162135419,
+        "holder_avg_shares": 15306.275740076,
+        "holder_date": "2026-06-30"
       },
       {
         "code": "002427",
@@ -2408,34 +2436,6 @@
         "holder_change_ratio": -1.95813242385,
         "holder_avg_shares": 39358.746476339,
         "holder_date": "2026-06-30"
-      },
-      {
-        "code": "301082",
-        "name": "久盛电气",
-        "price": 9.65,
-        "pct": 1.26,
-        "amount": 196030000.0,
-        "turnover": 7.23,
-        "vol_ratio": 2.65,
-        "pe": -104.23,
-        "pe_ttm": 77.21,
-        "pb": 2.8,
-        "total_cap": 2632000000.0,
-        "float_cap": 2839000000.0,
-        "main_net": null,
-        "concepts": [
-          "电力设备",
-          "电网设备",
-          "线缆部件及其他",
-          "浙江板块",
-          "专精特新",
-          "创业板综"
-        ],
-        "score": 74.06,
-        "holder_num": 21223.0,
-        "holder_change_ratio": -0.41293228849,
-        "holder_avg_shares": 10663.3922631108,
-        "holder_date": "2026-03-31"
       },
       {
         "code": "000088",
