@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-10-02T20:58:20+08:00",
-  "generated_at": "2026-10-02T20:58:20+08:00",
+  "updated_at": "2026-10-05T14:24:45+08:00",
+  "generated_at": "2026-10-05T14:24:45+08:00",
   "source": "tencent",
   "total_count": 5199,
   "message": "success",
@@ -161,7 +161,7 @@
           "住宅开发",
           "北京板块",
           "低市净率",
-          "题材股"
+          "破增发价股"
         ],
         "score": 112.77,
         "holder_num": 34994.0,
