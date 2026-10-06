@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-10-06T15:01:07+08:00",
-  "generated_at": "2026-10-06T15:01:07+08:00",
+  "updated_at": "2026-10-06T21:48:06+08:00",
+  "generated_at": "2026-10-06T21:48:06+08:00",
   "source": "tencent",
   "total_count": 5199,
   "message": "success",
@@ -17,9 +17,9 @@
   "require_holder_decline": true,
   "holder_stats": {
     "scanned": 131,
-    "ok": 127,
-    "declined": 94,
-    "failed": 4
+    "ok": 126,
+    "declined": 93,
+    "failed": 5
   },
   "min_volume_ratio": 1.5,
   "chip_stats": {
@@ -2380,34 +2380,6 @@
         "holder_change_ratio": -2.194616977226,
         "holder_avg_shares": 13357.9718882303,
         "holder_date": "2026-09-20"
-      },
-      {
-        "code": "600731",
-        "name": "湖南海利",
-        "price": 5.95,
-        "pct": 2.06,
-        "amount": 34820000.0,
-        "turnover": 1.09,
-        "vol_ratio": 1.99,
-        "pe": 20.89,
-        "pe_ttm": 18.4,
-        "pb": 1.01,
-        "total_cap": 3222999999.9999995,
-        "float_cap": 3295000000.0000005,
-        "main_net": null,
-        "concepts": [
-          "基础化工",
-          "农化制品",
-          "农药",
-          "湖南板块",
-          "破增发价股",
-          "机构重仓"
-        ],
-        "score": 46.0,
-        "holder_num": 24305.0,
-        "holder_change_ratio": -3.997314057748,
-        "holder_avg_shares": 22787.5916889529,
-        "holder_date": "2026-06-30"
       },
       {
         "code": "600720",
