@@ -1,10 +1,10 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-10-07T14:44:00+08:00",
-  "generated_at": "2026-10-07T14:44:00+08:00",
+  "updated_at": "2026-10-07T22:05:47+08:00",
+  "generated_at": "2026-10-07T22:05:47+08:00",
   "source": "tencent",
-  "total_count": 5223,
+  "total_count": 5199,
   "message": "success",
   "thresholds": [
     10.0,
@@ -17,9 +17,9 @@
   "require_holder_decline": true,
   "holder_stats": {
     "scanned": 131,
-    "ok": 126,
+    "ok": 127,
     "declined": 94,
-    "failed": 5
+    "failed": 4
   },
   "min_volume_ratio": 1.5,
   "chip_stats": {
