@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-11-03T15:24:46+08:00",
-  "generated_at": "2026-11-03T15:24:46+08:00",
+  "updated_at": "2026-11-03T23:28:23+08:00",
+  "generated_at": "2026-11-03T23:28:23+08:00",
   "source": "tencent",
   "total_count": 5223,
   "message": "success",
@@ -17,9 +17,9 @@
   "require_holder_decline": true,
   "holder_stats": {
     "scanned": 165,
-    "ok": 159,
+    "ok": 158,
     "declined": 78,
-    "failed": 6
+    "failed": 7
   },
   "min_volume_ratio": 1.5,
   "chip_stats": {
@@ -49,7 +49,7 @@
           "多业态零售",
           "安徽板块",
           "2026中报预减",
-          "题材股"
+          "破增发价股"
         ],
         "score": 126.18,
         "holder_num": 45344.0,
@@ -189,7 +189,7 @@
           "光伏发电",
           "重庆板块",
           "低市净率",
-          "破增发价股"
+          "反转股"
         ],
         "score": 106.03,
         "holder_num": 183663.0,
@@ -245,7 +245,7 @@
           "国有大型银行Ⅲ",
           "北京板块",
           "低市盈率",
-          "趋势股"
+          "金融地产风格"
         ],
         "score": 104.67,
         "holder_num": 605349.0,
@@ -329,7 +329,7 @@
           "轨交设备Ⅲ",
           "北京板块",
           "增持计划",
-          "先进制造风格"
+          "趋势股"
         ],
         "score": 103.18,
         "holder_num": 528670.0,
@@ -646,34 +646,6 @@
         "holder_date": "2026-09-30"
       },
       {
-        "code": "300637",
-        "name": "扬帆新材",
-        "price": 9.98,
-        "pct": -0.1,
-        "amount": 293210000.0,
-        "turnover": 12.89,
-        "vol_ratio": 2.57,
-        "pe": 94.31,
-        "pe_ttm": 737.89,
-        "pb": 3.11,
-        "total_cap": 2341000000.0,
-        "float_cap": 2343000000.0,
-        "main_net": null,
-        "concepts": [
-          "基础化工",
-          "化学制品",
-          "其他化学制品",
-          "浙江板块",
-          "高市盈率",
-          "QFII新进"
-        ],
-        "score": 95.64,
-        "holder_num": 19648.0,
-        "holder_change_ratio": -4.852300242131,
-        "holder_avg_shares": 11947.7875610749,
-        "holder_date": "2026-09-30"
-      },
-      {
         "code": "601800",
         "name": "中国交建",
         "price": 6.3,
@@ -973,7 +945,7 @@
           "轨交设备Ⅲ",
           "北京板块",
           "基金减仓",
-          "先进制造风格"
+          "趋势股"
         ],
         "score": 87.88,
         "holder_num": 60955.0,
@@ -1113,7 +1085,7 @@
           "医疗设备",
           "广东板块",
           "基金减仓",
-          "最近多板"
+          "百日新高 "
         ],
         "score": 85.71,
         "holder_num": 24039.0,
@@ -1458,34 +1430,6 @@
         "holder_date": "2026-10-30"
       },
       {
-        "code": "600467",
-        "name": "好当家",
-        "price": 2.26,
-        "pct": 3.2,
-        "amount": 135840000.0,
-        "turnover": 4.14,
-        "vol_ratio": 1.6,
-        "pe": 76.33,
-        "pe_ttm": 93.57,
-        "pb": 0.96,
-        "total_cap": 3302000000.0000005,
-        "float_cap": 3302000000.0000005,
-        "main_net": null,
-        "concepts": [
-          "农林牧渔",
-          "渔业",
-          "水产养殖",
-          "山东板块",
-          "QFII新进",
-          "破增发价股"
-        ],
-        "score": 65.13,
-        "holder_num": 62825.0,
-        "holder_change_ratio": -4.888424622279,
-        "holder_avg_shares": 23254.9829526462,
-        "holder_date": "2026-09-30"
-      },
-      {
         "code": "600292",
         "name": "电投水电",
         "price": 9.87,
@@ -1619,11 +1563,11 @@
           "连续亏损",
           "QFII新进"
         ],
-        "score": 58.96,
-        "holder_num": 196385.0,
-        "holder_change_ratio": -1.612200217432,
-        "holder_avg_shares": 14084.7457952491,
-        "holder_date": "2026-10-20"
+        "score": 58.01,
+        "holder_num": 194462.0,
+        "holder_change_ratio": -0.979199022329,
+        "holder_avg_shares": 14224.027331818,
+        "holder_date": "2026-10-30"
       },
       {
         "code": "001391",
@@ -1728,8 +1672,8 @@
           "电池",
           "蓄电池及其他电池",
           "湖北板块",
-          "破净股",
-          "标准普尔"
+          "标准普尔",
+          "富时罗素"
         ],
         "score": 54.87,
         "holder_num": 67470.0,
@@ -1794,6 +1738,34 @@
         "holder_date": "2026-10-30"
       },
       {
+        "code": "002124",
+        "name": "天邦食品",
+        "price": 1.88,
+        "pct": 2.73,
+        "amount": 131990000.0,
+        "turnover": 3.57,
+        "vol_ratio": 1.59,
+        "pe": -1.89,
+        "pe_ttm": -1.29,
+        "pb": 5.9,
+        "total_cap": 3708000000.0,
+        "float_cap": 4177000000.0000005,
+        "main_net": null,
+        "concepts": [
+          "农林牧渔",
+          "养殖业",
+          "生猪养殖",
+          "浙江板块",
+          "连续亏损",
+          "基金减仓"
+        ],
+        "score": 50.45,
+        "holder_num": 103853.0,
+        "holder_change_ratio": -4.859056221772,
+        "holder_avg_shares": 21394.9893792187,
+        "holder_date": "2026-10-30"
+      },
+      {
         "code": "000679",
         "name": "大连友谊",
         "price": 6.62,
@@ -1820,6 +1792,34 @@
         "holder_change_ratio": -2.425524987791,
         "holder_avg_shares": 19819.8198198198,
         "holder_date": "2026-09-30"
+      },
+      {
+        "code": "603227",
+        "name": "雪峰科技",
+        "price": 7.09,
+        "pct": 2.75,
+        "amount": 66600000.0,
+        "turnover": 0.88,
+        "vol_ratio": 1.68,
+        "pe": 15.35,
+        "pe_ttm": 15.93,
+        "pb": 1.41,
+        "total_cap": 7598000000.0,
+        "float_cap": 7598000000.0,
+        "main_net": null,
+        "concepts": [
+          "基础化工",
+          "化学制品",
+          "民爆制品",
+          "新疆板块",
+          "增持计划",
+          "沪股通"
+        ],
+        "score": 47.05,
+        "holder_num": 32963.0,
+        "holder_change_ratio": -1.441172073554,
+        "holder_avg_shares": 32511.9888663046,
+        "holder_date": "2026-10-30"
       },
       {
         "code": "000403",
@@ -2095,11 +2095,11 @@
           "连续亏损",
           "低价股"
         ],
-        "score": 40.68,
-        "holder_num": 93372.0,
-        "holder_change_ratio": -0.46371805942,
-        "holder_avg_shares": 29091.9942059718,
-        "holder_date": "2026-10-20"
+        "score": 41.57,
+        "holder_num": 92381.0,
+        "holder_change_ratio": -1.061346013794,
+        "holder_avg_shares": 29404.0731643953,
+        "holder_date": "2026-10-30"
       },
       {
         "code": "002302",
@@ -2121,7 +2121,7 @@
           "水泥制品",
           "新疆板块",
           "连续亏损",
-          "低市净率"
+          "反内卷概念"
         ],
         "score": 38.7,
         "holder_num": 56314.0,
@@ -2531,27 +2531,6 @@
         "holder_date": "2026-10-30"
       },
       {
-        "code": "600467",
-        "name": "好当家",
-        "price": 2.26,
-        "pct": 3.2,
-        "amount": 135840000.0,
-        "turnover": 4.14,
-        "vol_ratio": 1.6,
-        "pe": 76.33,
-        "pe_ttm": 93.57,
-        "pb": 0.96,
-        "total_cap": 3302000000.0000005,
-        "float_cap": 3302000000.0000005,
-        "main_net": null,
-        "concepts": [],
-        "score": 65.13,
-        "holder_num": 62825.0,
-        "holder_change_ratio": -4.888424622279,
-        "holder_avg_shares": 23254.9829526462,
-        "holder_date": "2026-09-30"
-      },
-      {
         "code": "600868",
         "name": "梅雁吉祥",
         "price": 2.69,
@@ -2587,11 +2566,11 @@
         "float_cap": 8492000000.0,
         "main_net": null,
         "concepts": [],
-        "score": 58.96,
-        "holder_num": 196385.0,
-        "holder_change_ratio": -1.612200217432,
-        "holder_avg_shares": 14084.7457952491,
-        "holder_date": "2026-10-20"
+        "score": 58.01,
+        "holder_num": 194462.0,
+        "holder_change_ratio": -0.979199022329,
+        "holder_avg_shares": 14224.027331818,
+        "holder_date": "2026-10-30"
       },
       {
         "code": "001391",
@@ -2613,6 +2592,27 @@
         "holder_change_ratio": -0.31238912782,
         "holder_avg_shares": 105979.871744792,
         "holder_date": "2026-09-30"
+      },
+      {
+        "code": "002124",
+        "name": "天邦食品",
+        "price": 1.88,
+        "pct": 2.73,
+        "amount": 131990000.0,
+        "turnover": 3.57,
+        "vol_ratio": 1.59,
+        "pe": -1.89,
+        "pe_ttm": -1.29,
+        "pb": 5.9,
+        "total_cap": 3708000000.0,
+        "float_cap": 4177000000.0000005,
+        "main_net": null,
+        "concepts": [],
+        "score": 50.45,
+        "holder_num": 103853.0,
+        "holder_change_ratio": -4.859056221772,
+        "holder_avg_shares": 21394.9893792187,
+        "holder_date": "2026-10-30"
       },
       {
         "code": "601158",
@@ -2734,11 +2734,11 @@
         "float_cap": 6193000000.0,
         "main_net": null,
         "concepts": [],
-        "score": 40.68,
-        "holder_num": 93372.0,
-        "holder_change_ratio": -0.46371805942,
-        "holder_avg_shares": 29091.9942059718,
-        "holder_date": "2026-10-20"
+        "score": 41.57,
+        "holder_num": 92381.0,
+        "holder_change_ratio": -1.061346013794,
+        "holder_avg_shares": 29404.0731643953,
+        "holder_date": "2026-10-30"
       },
       {
         "code": "002302",
@@ -2804,6 +2804,28 @@
         "holder_date": "2026-09-30"
       }
     ],
-    "2": []
+    "2": [
+      {
+        "code": "002124",
+        "name": "天邦食品",
+        "price": 1.88,
+        "pct": 2.73,
+        "amount": 131990000.0,
+        "turnover": 3.57,
+        "vol_ratio": 1.59,
+        "pe": -1.89,
+        "pe_ttm": -1.29,
+        "pb": 5.9,
+        "total_cap": 3708000000.0,
+        "float_cap": 4177000000.0000005,
+        "main_net": null,
+        "concepts": [],
+        "score": 50.45,
+        "holder_num": 103853.0,
+        "holder_change_ratio": -4.859056221772,
+        "holder_avg_shares": 21394.9893792187,
+        "holder_date": "2026-10-30"
+      }
+    ]
   }
 }
