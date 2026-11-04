@@ -1,8 +1,8 @@
 {
   "ok": true,
   "stale": false,
-  "updated_at": "2026-11-04T15:08:06+08:00",
-  "generated_at": "2026-11-04T15:08:06+08:00",
+  "updated_at": "2026-11-04T23:41:58+08:00",
+  "generated_at": "2026-11-04T23:41:58+08:00",
   "source": "tencent",
   "total_count": 5223,
   "message": "success",
@@ -18,7 +18,7 @@
   "holder_stats": {
     "scanned": 196,
     "ok": 193,
-    "declined": 94,
+    "declined": 95,
     "failed": 3
   },
   "min_volume_ratio": 1.5,
@@ -132,8 +132,8 @@
           "电网设备",
           "线缆部件及其他",
           "江苏板块",
-          "创业板综",
-          "深股通"
+          "昨日高振幅",
+          "创业板综"
         ],
         "score": 112.71,
         "holder_num": 58963.0,
@@ -860,8 +860,8 @@
           "一般零售",
           "多业态零售",
           "湖南板块",
-          "破净股",
-          "内贸流通"
+          "昨日高振幅",
+          "昨日炸板"
         ],
         "score": 92.76,
         "holder_num": 22661.0,
@@ -889,7 +889,7 @@
           "综合电力设备商",
           "上海板块",
           "先进制造风格",
-          "大盘成长"
+          "大盘股"
         ],
         "score": 92.64,
         "holder_num": 320868.0,
@@ -1141,7 +1141,7 @@
           "化学制剂",
           "江苏板块",
           "QFII新进",
-          "破增发价股"
+          "昨日高振幅"
         ],
         "score": 90.15,
         "holder_num": 38629.0,
@@ -1561,7 +1561,7 @@
           "面板",
           "陕西板块",
           "2026中报预减",
-          "破增发价股"
+          "中盘成长"
         ],
         "score": 82.05,
         "holder_num": 246621.0,
@@ -1813,7 +1813,7 @@
           "啤酒",
           "广东板块",
           "消费风格",
-          "小盘股"
+          "小盘价值"
         ],
         "score": 69.96,
         "holder_num": 29349.0,
@@ -1897,7 +1897,7 @@
           "其他家电Ⅲ",
           "安徽板块",
           "破增发价股",
-          "昨日高振幅"
+          "创业板综"
         ],
         "score": 63.29,
         "holder_num": 28962.0,
@@ -2606,6 +2606,34 @@
         "holder_date": "2026-10-20"
       },
       {
+        "code": "300343",
+        "name": "联创股份",
+        "price": 4.63,
+        "pct": 0.43,
+        "amount": 85080000.0,
+        "turnover": 1.75,
+        "vol_ratio": 1.63,
+        "pe": 71.8,
+        "pe_ttm": 66.6,
+        "pb": 2.47,
+        "total_cap": 4934000000.0,
+        "float_cap": 4947000000.0,
+        "main_net": null,
+        "concepts": [
+          "基础化工",
+          "化学制品",
+          "氟化工",
+          "山东板块",
+          "近期摘帽",
+          "破增发价股"
+        ],
+        "score": 39.89,
+        "holder_num": 52767.0,
+        "holder_change_ratio": -1.605504587156,
+        "holder_avg_shares": 20247.027100271,
+        "holder_date": "2026-10-20"
+      },
+      {
         "code": "002162",
         "name": "悦心健康",
         "price": 3.62,
@@ -2627,11 +2655,11 @@
           "高市盈率",
           "2026中报预增"
         ],
-        "score": 35.62,
-        "holder_num": 51363.0,
-        "holder_change_ratio": -1.204100867491,
-        "holder_avg_shares": 17905.9043474875,
-        "holder_date": "2026-10-20"
+        "score": 35.99,
+        "holder_num": 50617.0,
+        "holder_change_ratio": -1.452407374959,
+        "holder_avg_shares": 18169.8039196317,
+        "holder_date": "2026-10-30"
       },
       {
         "code": "002529",
@@ -3462,6 +3490,27 @@
         "holder_date": "2026-10-30"
       },
       {
+        "code": "300343",
+        "name": "联创股份",
+        "price": 4.63,
+        "pct": 0.43,
+        "amount": 85080000.0,
+        "turnover": 1.75,
+        "vol_ratio": 1.63,
+        "pe": 71.8,
+        "pe_ttm": 66.6,
+        "pb": 2.47,
+        "total_cap": 4934000000.0,
+        "float_cap": 4947000000.0,
+        "main_net": null,
+        "concepts": [],
+        "score": 39.89,
+        "holder_num": 52767.0,
+        "holder_change_ratio": -1.605504587156,
+        "holder_avg_shares": 20247.027100271,
+        "holder_date": "2026-10-20"
+      },
+      {
         "code": "002162",
         "name": "悦心健康",
         "price": 3.62,
@@ -3476,11 +3525,11 @@
         "float_cap": 3329000000.0,
         "main_net": null,
         "concepts": [],
-        "score": 35.62,
-        "holder_num": 51363.0,
-        "holder_change_ratio": -1.204100867491,
-        "holder_avg_shares": 17905.9043474875,
-        "holder_date": "2026-10-20"
+        "score": 35.99,
+        "holder_num": 50617.0,
+        "holder_change_ratio": -1.452407374959,
+        "holder_avg_shares": 18169.8039196317,
+        "holder_date": "2026-10-30"
       }
     ],
     "2": [
