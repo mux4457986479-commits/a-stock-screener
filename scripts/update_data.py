@@ -825,40 +825,5 @@ def main() -> int:
     return 0
 
 
-def run_with_retail() -> int:
-    """Keep stock screening intact and publish retail aggregates in the same snapshot."""
-    import subprocess
-    import sys
-    import os
-
-    output = Path(sys.argv[sys.argv.index("--output") + 1]) if "--output" in sys.argv else Path(DEFAULT_OUTPUT)
-    repository = Path(__file__).resolve().parents[1]
-    retail_path = repository / "retail" / "data.json"
-    before = load_previous(output) or {}
-    prior = before.get("retail") or load_previous(retail_path)
-    result = main()
-    retail = prior
-    try:
-        if prior:
-            retail_path.write_text(json.dumps(prior, ensure_ascii=False), encoding="utf-8")
-        subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", str(repository / "retail" / "scripts"), "-p", "test_*.py"], check=True, timeout=30)
-        child = subprocess.run([sys.executable, str(repository / "retail" / "scripts" / "update.py")], timeout=330)
-        retail = load_previous(retail_path) or prior
-        if child.returncode:
-            print("Retail collection failed; previous snapshot and failure status retained.")
-    except Exception as exc:
-        print("Retail update failed:", type(exc).__name__)
-        if retail:
-            retail["update"] = {"ok": False, "attempted_at": now_iso(), "message": "本次社区采集失败，保留旧快照：" + type(exc).__name__}
-    if retail:
-        payload = load_previous(output) or {}
-        payload["retail"] = retail
-        temporary = output.with_suffix(".retail.tmp")
-        temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-        os.replace(temporary, output)
-    return result
-
-
 if __name__ == "__main__":
-    raise SystemExit(run_with_retail())
-
+    raise SystemExit(main())
